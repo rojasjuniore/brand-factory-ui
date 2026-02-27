@@ -1,0 +1,160 @@
+{
+  "name": "Brand Factory - Creación de Marcas",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "brand-factory",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-1",
+      "name": "Webhook - Brand Brief",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "options": {
+          "maxTokensToSample": 4096
+        },
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "=Eres un estratega de marca experto con 20+ años de experiencia. Analiza este brief y genera una estrategia de marca completa.\n\n## BRAND BRIEF\n- Nombre de marca: {{ $json.body.brand_name }}\n- Industria: {{ $json.body.industry }}\n- Misión: {{ $json.body.mission }}\n- Visión: {{ $json.body.vision }}\n- Público objetivo: {{ $json.body.target_audience }}\n- Competencia: {{ $json.body.competitors }}\n- Valores: {{ $json.body.values }}\n- Tono deseado: {{ $json.body.tone }}\n- Diferenciadores: {{ $json.body.differentiators }}\n- Presupuesto: {{ $json.body.budget }}\n- Timeline: {{ $json.body.timeline }}\n\n## GENERA EN JSON:\n{\n  \"posicionamiento\": {\n    \"statement\": \"Una línea que define la marca\",\n    \"propuesta_valor\": [\"Diferenciador 1\", \"Diferenciador 2\", \"Diferenciador 3\"]\n  },\n  \"voz_de_marca\": {\n    \"tono\": \"Descripción del tono\",\n    \"personalidad\": [\"Rasgo 1\", \"Rasgo 2\", \"Rasgo 3\"],\n    \"dos\": [\"Do 1\", \"Do 2\", \"Do 3\", \"Do 4\", \"Do 5\"],\n    \"donts\": [\"Don't 1\", \"Don't 2\", \"Don't 3\", \"Don't 4\", \"Don't 5\"]\n  },\n  \"buyer_personas\": [\n    {\n      \"nombre\": \"Nombre del persona\",\n      \"edad\": \"Rango de edad\",\n      \"ocupacion\": \"Ocupación\",\n      \"dolores\": [\"Dolor 1\", \"Dolor 2\"],\n      \"motivaciones\": [\"Motivación 1\", \"Motivación 2\"],\n      \"canales\": [\"Canal 1\", \"Canal 2\"]\n    }\n  ],\n  \"keywords\": [\"keyword1\", \"keyword2\", \"keyword3\", \"keyword4\", \"keyword5\", \"keyword6\", \"keyword7\", \"keyword8\", \"keyword9\", \"keyword10\"],\n  \"arquetipos\": {\n    \"primario\": \"Arquetipo principal\",\n    \"secundario\": \"Arquetipo secundario\"\n  }\n}\n\nResponde SOLO con el JSON, sin explicaciones."
+            }
+          ]
+        }
+      },
+      "id": "claude-strategy",
+      "name": "Claude - Brand Strategy",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [520, 200],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "options": {
+          "maxTokensToSample": 4096
+        },
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "=Eres un director creativo experto en branding visual. Basándote en la estrategia de marca, genera una guía de identidad visual completa.\n\n## ESTRATEGIA DE MARCA:\n{{ $node['Claude - Brand Strategy'].json.message.content }}\n\n## BRIEF ORIGINAL:\n- Nombre: {{ $json.body.brand_name }}\n- Industria: {{ $json.body.industry }}\n- Tono: {{ $json.body.tone }}\n\n## GENERA EN JSON:\n{\n  \"paleta_colores\": {\n    \"primario\": {\"hex\": \"#XXXXXX\", \"nombre\": \"Nombre color\", \"significado\": \"Por qué este color\"},\n    \"secundario\": {\"hex\": \"#XXXXXX\", \"nombre\": \"Nombre color\", \"significado\": \"Por qué este color\"},\n    \"acento\": {\"hex\": \"#XXXXXX\", \"nombre\": \"Nombre color\"},\n    \"neutros\": [{\"hex\": \"#XXXXXX\", \"uso\": \"Uso del neutro\"}]\n  },\n  \"tipografia\": {\n    \"primaria\": {\"font\": \"Nombre (Google Fonts)\", \"uso\": \"Títulos/headers\", \"peso\": \"400-700\"},\n    \"secundaria\": {\"font\": \"Nombre (Google Fonts)\", \"uso\": \"Body text\", \"peso\": \"300-500\"},\n    \"jerarquias\": {\n      \"h1\": \"48px/56px\",\n      \"h2\": \"36px/44px\",\n      \"h3\": \"24px/32px\",\n      \"body\": \"16px/24px\",\n      \"small\": \"14px/20px\"\n    }\n  },\n  \"estilo_visual\": {\n    \"aesthetic\": \"Una línea que describe el estilo\",\n    \"elementos_graficos\": [\"Elemento 1\", \"Elemento 2\", \"Elemento 3\"],\n    \"estilo_fotografico\": \"Descripción del estilo de fotos\",\n    \"patterns\": \"Descripción de patterns si aplica\"\n  },\n  \"prompts_logo\": [\n    \"Prompt 1 para Midjourney/DALL-E detallado\",\n    \"Prompt 2 alternativo\",\n    \"Prompt 3 minimalista\"\n  ],\n  \"mockups_sugeridos\": [\"Tarjetas de presentación\", \"Papelería\", \"Redes sociales\", \"Packaging si aplica\"]\n}\n\nResponde SOLO con el JSON."
+            }
+          ]
+        }
+      },
+      "id": "claude-visual",
+      "name": "Claude - Visual Identity",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [520, 400],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "options": {
+          "maxTokensToSample": 8192
+        },
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "=Eres un estratega digital experto en marketing y redes sociales. Crea una estrategia digital completa para esta marca.\n\n## ESTRATEGIA DE MARCA:\n{{ $node['Claude - Brand Strategy'].json.message.content }}\n\n## BRIEF:\n- Nombre: {{ $json.body.brand_name }}\n- Industria: {{ $json.body.industry }}\n- Público: {{ $json.body.target_audience }}\n- Budget: {{ $json.body.budget }}\n\n## GENERA EN JSON:\n{\n  \"plataformas\": [\n    {\n      \"nombre\": \"Instagram\",\n      \"prioridad\": 1,\n      \"justificacion\": \"Por qué esta plataforma\",\n      \"frecuencia\": \"Posts por semana\",\n      \"mejor_horario\": \"Horarios óptimos\"\n    }\n  ],\n  \"pilares_contenido\": [\n    {\n      \"nombre\": \"Nombre del pilar\",\n      \"descripcion\": \"Qué tipo de contenido\",\n      \"porcentaje\": 25,\n      \"formatos\": [\"Reel\", \"Carrusel\", \"Story\"],\n      \"ejemplos\": [\"Ejemplo 1\", \"Ejemplo 2\"]\n    }\n  ],\n  \"calendario_30_dias\": [\n    {\n      \"dia\": 1,\n      \"pilar\": \"Nombre del pilar\",\n      \"formato\": \"Tipo de post\",\n      \"copy\": \"Copy sugerido para el post\",\n      \"cta\": \"Call to action\"\n    }\n  ],\n  \"hashtags\": {\n    \"branded\": [\"#MarcaX\", \"#SlogenMarca\"],\n    \"comunidad\": [\"#hashtag1\", \"#hashtag2\"],\n    \"nicho\": [\"#nichospecifico1\", \"#nicho2\"]\n  },\n  \"kpis\": {\n    \"mes_1\": {\"seguidores\": \"Meta\", \"engagement\": \"Meta %\", \"alcance\": \"Meta\"},\n    \"mes_3\": {\"seguidores\": \"Meta\", \"engagement\": \"Meta %\", \"alcance\": \"Meta\"},\n    \"mes_6\": {\"seguidores\": \"Meta\", \"engagement\": \"Meta %\", \"alcance\": \"Meta\"}\n  },\n  \"presupuesto_ads\": {\n    \"mensual_sugerido\": \"$XXX USD\",\n    \"distribucion\": {\n      \"awareness\": \"40%\",\n      \"engagement\": \"30%\",\n      \"conversion\": \"30%\"\n    }\n  }\n}\n\nResponde SOLO con el JSON."
+            }
+          ]
+        }
+      },
+      "id": "claude-digital",
+      "name": "Claude - Digital Strategy",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [520, 600],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"success\": true,\n  \"brand_name\": \"{{ $node['Webhook - Brand Brief'].json.body.brand_name }}\",\n  \"generated_at\": \"{{ $now.toISO() }}\",\n  \"strategy\": {{ $node['Claude - Brand Strategy'].json.message.content }},\n  \"visual_identity\": {{ $node['Claude - Visual Identity'].json.message.content }},\n  \"digital_strategy\": {{ $node['Claude - Digital Strategy'].json.message.content }}\n}",
+        "options": {}
+      },
+      "id": "merge-results",
+      "name": "Consolidate Results",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "response",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1020, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - Brand Brief": {
+      "main": [
+        [
+          {"node": "Claude - Brand Strategy", "type": "main", "index": 0},
+          {"node": "Claude - Visual Identity", "type": "main", "index": 0},
+          {"node": "Claude - Digital Strategy", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Claude - Brand Strategy": {
+      "main": [[{"node": "Consolidate Results", "type": "main", "index": 0}]]
+    },
+    "Claude - Visual Identity": {
+      "main": [[{"node": "Consolidate Results", "type": "main", "index": 0}]]
+    },
+    "Claude - Digital Strategy": {
+      "main": [[{"node": "Consolidate Results", "type": "main", "index": 0}]]
+    },
+    "Consolidate Results": {
+      "main": [[{"node": "Response", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "saveManualExecutions": true,
+    "callerPolicy": "any",
+    "executionOrder": "v1"
+  }
+}
