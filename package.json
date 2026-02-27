@@ -2,9 +2,13 @@
   "name": "brand-factory-ui",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx serve -s . -l 3000"
+    "start": "serve -s . -l $PORT",
+    "build": "echo 'No build needed'"
   },
   "dependencies": {
     "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
