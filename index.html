@@ -361,26 +361,42 @@
         });
 
         function parseResult(result) {
-            // Parse the Claude response - handle both string and object
+            console.log('Raw result:', result);
             let content = result;
-            if (typeof result === 'object' && result.content) {
+            
+            // Handle n8n Claude response: {content: [{type: "text", text: "```json..."}]}
+            if (result?.content && Array.isArray(result.content)) {
+                content = result.content[0]?.text || result.content;
+            } else if (typeof result === 'object' && result.content) {
                 content = result.content;
             }
+            
+            // Extract JSON from markdown code blocks
             if (typeof content === 'string') {
-                // Extract JSON from markdown code blocks if present
-                const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
+                const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/);
+                if (jsonMatch && jsonMatch[1]) {
                     try {
-                        content = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+                        content = JSON.parse(jsonMatch[1].trim());
                     } catch (e) {
                         console.error('Parse error:', e);
+                        // Try to find raw JSON
+                        const rawMatch = content.match(/\{[\s\S]*\}/);
+                        if (rawMatch) {
+                            try {
+                                content = JSON.parse(rawMatch[0]);
+                            } catch (e2) {
+                                console.error('Secondary parse error:', e2);
+                            }
+                        }
                     }
                 }
             }
+            
+            console.log('Parsed content:', content);
             return {
                 strategy: content,
-                visual: content.visual_identity || content.identidad_visual || {},
-                digital: content.digital_strategy || content.estrategia_digital || {}
+                visual: content.visual_identity || content.identidad_visual || content.paleta_colores ? content : {},
+                digital: content.digital_strategy || content.estrategia_digital || content.plataformas ? content : {}
             };
         }
 
