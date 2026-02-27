@@ -5,244 +5,559 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brand Factory - Crea tu Marca con IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'display': ['Playfair Display', 'serif'],
+                        'space': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
-        .card-glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .btn-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .btn-gradient:hover { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
-        .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
-        .input-dark:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.2); }
-        .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1f 100%); }
+        .card-glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .btn-primary:hover { background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); transform: translateY(-2px); }
+        .color-swatch { width: 80px; height: 80px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .section-fade { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .loading-dots::after { content: ''; animation: dots 1.5s infinite; }
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; } }
+        .tab-active { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="gradient-bg min-h-screen text-white">
+    
     <!-- Header -->
-    <header class="py-6 px-4">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <header class="py-6 px-4 border-b border-white/5">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl btn-gradient flex items-center justify-center">
-                    <span class="text-white text-xl">B</span>
-                </div>
-                <span class="text-white font-bold text-xl">Brand Factory</span>
+                <div class="w-10 h-10 rounded-xl btn-primary flex items-center justify-center font-bold">B</div>
+                <span class="font-semibold text-xl">Brand Factory</span>
             </div>
-            <span class="text-gray-400 text-sm">Powered by Claude AI</span>
+            <span class="text-gray-500 text-sm hidden md:block">Powered by Claude AI + Gemini</span>
         </div>
     </header>
 
-    <!-- Hero -->
-    <section class="py-12 px-4 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-            Crea tu Marca con <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Inteligencia Artificial</span>
-        </h1>
-        <p class="text-gray-300 text-lg max-w-2xl mx-auto">
-            Completa el brief y obtén estrategia de marca, identidad visual y plan digital en segundos.
-        </p>
-    </section>
-
-    <!-- Form -->
-    <section class="py-8 px-4">
-        <form id="brandForm" class="max-w-2xl mx-auto">
-            <div class="card-glass rounded-2xl p-8 space-y-6">
-                
-                <!-- Brand Name -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Nombre de la marca *</label>
-                    <input type="text" name="brand_name" required
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition"
-                        placeholder="Ej: Cafe Origen, TechFlow, Alma Fitness">
-                </div>
-
-                <!-- Industry -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Industria / Sector *</label>
-                    <input type="text" name="industry" required
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition"
-                        placeholder="Ej: Cafeteria, Tecnologia, Moda, Salud, Servicios">
-                </div>
-
-                <!-- Mission -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Mision *</label>
-                    <textarea name="mission" required rows="2"
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition resize-none"
-                        placeholder="Por que existe tu marca? Que problema resuelve?"></textarea>
-                </div>
-
-                <!-- Vision -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Vision</label>
-                    <textarea name="vision" rows="2"
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition resize-none"
-                        placeholder="Donde quieres estar en 5 anios?"></textarea>
-                </div>
-
-                <!-- Target -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Publico Objetivo *</label>
-                    <textarea name="target_audience" required rows="2"
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition resize-none"
-                        placeholder="Describe tu cliente ideal: edad, genero, intereses, comportamientos..."></textarea>
-                </div>
-
-                <!-- Values -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Valores de la marca *</label>
-                    <input type="text" name="values" required
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition"
-                        placeholder="Ej: Calidad, Innovacion, Sostenibilidad, Comunidad">
-                </div>
-
-                <!-- Tone -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Tono de comunicacion *</label>
-                    <select name="tone" required
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white outline-none transition cursor-pointer">
-                        <option value="" class="bg-gray-900">Selecciona un tono</option>
-                        <option value="profesional y serio" class="bg-gray-900">Profesional y serio</option>
-                        <option value="amigable y cercano" class="bg-gray-900">Amigable y cercano</option>
-                        <option value="divertido y casual" class="bg-gray-900">Divertido y casual</option>
-                        <option value="lujoso y exclusivo" class="bg-gray-900">Lujoso y exclusivo</option>
-                        <option value="innovador y disruptivo" class="bg-gray-900">Innovador y disruptivo</option>
-                        <option value="calido y empatico" class="bg-gray-900">Calido y empatico</option>
-                    </select>
-                </div>
-
-                <!-- Competitors -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Competencia (opcional)</label>
-                    <input type="text" name="competitors"
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition"
-                        placeholder="Ej: Nike, Adidas, Under Armour">
-                </div>
-
-                <!-- Differentiators -->
-                <div>
-                    <label class="block text-white font-medium mb-2">Que te hace diferente? *</label>
-                    <textarea name="differentiators" required rows="2"
-                        class="w-full px-4 py-3 rounded-xl input-dark text-white placeholder-gray-500 outline-none transition resize-none"
-                        placeholder="Por que alguien deberia elegirte?"></textarea>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit" id="submitBtn"
-                    class="w-full py-4 btn-gradient text-white font-semibold rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
-                    <span>Generar Estrategia de Marca</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
-                </button>
-
-                <p class="text-center text-gray-500 text-sm">
-                    El proceso toma aproximadamente 30 segundos
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Step 1: Form -->
+        <section id="formSection">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    Crea tu <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Marca Completa</span> con IA
+                </h1>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Estrategia + Identidad Visual + Plan Digital + Preview de Logo. Todo en minutos.
                 </p>
             </div>
-        </form>
-    </section>
 
-    <!-- Loading Modal -->
-    <div id="loadingModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="card-glass rounded-2xl p-8 text-center max-w-sm mx-4">
-            <div class="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <h3 class="text-white text-xl font-semibold mb-2">Generando tu estrategia...</h3>
-            <p class="text-gray-400">Claude esta analizando tu brief</p>
-            <div class="mt-4 space-y-1">
-                <div class="loading-pulse text-purple-400 text-sm">Analizando mercado...</div>
-            </div>
-        </div>
-    </div>
+            <form id="brandForm" class="card-glass rounded-3xl p-8 max-w-2xl mx-auto">
+                <div class="grid gap-6">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Nombre de la marca *</label>
+                            <input type="text" name="brand_name" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                                placeholder="Ej: Cafe Origen">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Industria *</label>
+                            <input type="text" name="industry" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-indigo-500 outline-none transition"
+                                placeholder="Ej: Cafeteria, Moda, Tech">
+                        </div>
+                    </div>
 
-    <!-- Results Section -->
-    <section id="resultsSection" class="hidden py-8 px-4">
-        <div class="max-w-4xl mx-auto">
-            <div class="card-glass rounded-2xl p-8">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-white">Tu Estrategia de Marca</h2>
-                    <div class="flex gap-2">
-                        <button onclick="copyResults()" class="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition text-sm">
-                            Copiar JSON
-                        </button>
-                        <button onclick="downloadResults()" class="px-4 py-2 btn-gradient text-white rounded-lg transition text-sm">
-                            Descargar
-                        </button>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Mision *</label>
+                        <textarea name="mission" required rows="2"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-indigo-500 outline-none transition resize-none"
+                            placeholder="Por que existe tu marca? Que problema resuelve?"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Publico Objetivo *</label>
+                        <textarea name="target_audience" required rows="2"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-indigo-500 outline-none transition resize-none"
+                            placeholder="Describe tu cliente ideal: edad, intereses, comportamientos..."></textarea>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Valores *</label>
+                            <input type="text" name="values" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-indigo-500 outline-none transition"
+                                placeholder="Ej: Calidad, Innovacion">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Tono *</label>
+                            <select name="tone" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:border-indigo-500 outline-none transition cursor-pointer">
+                                <option value="" class="bg-gray-900">Selecciona</option>
+                                <option value="profesional y serio" class="bg-gray-900">Profesional</option>
+                                <option value="amigable y cercano" class="bg-gray-900">Amigable</option>
+                                <option value="lujoso y exclusivo" class="bg-gray-900">Lujoso</option>
+                                <option value="innovador y disruptivo" class="bg-gray-900">Innovador</option>
+                                <option value="calido y empatico" class="bg-gray-900">Calido</option>
+                                <option value="divertido y juvenil" class="bg-gray-900">Divertido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Que te hace diferente? *</label>
+                        <textarea name="differentiators" required rows="2"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-indigo-500 outline-none transition resize-none"
+                            placeholder="Por que alguien deberia elegirte?"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBtn"
+                        class="w-full py-4 btn-primary text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
+                        <span>Crear Mi Marca</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Loading State -->
+        <section id="loadingSection" class="hidden text-center py-20">
+            <div class="card-glass rounded-3xl p-12 max-w-md mx-auto">
+                <div class="w-20 h-20 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                <h2 class="text-2xl font-semibold mb-2">Creando tu marca<span class="loading-dots"></span></h2>
+                <p class="text-gray-400" id="loadingStatus">Analizando tu brief con IA...</p>
+                <div class="mt-6 space-y-2 text-sm text-gray-500">
+                    <div id="step1" class="flex items-center gap-2 justify-center">
+                        <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                        <span>Generando estrategia de marca</span>
+                    </div>
+                    <div id="step2" class="flex items-center gap-2 justify-center opacity-40">
+                        <div class="w-2 h-2 rounded-full bg-gray-500"></div>
+                        <span>Creando identidad visual</span>
+                    </div>
+                    <div id="step3" class="flex items-center gap-2 justify-center opacity-40">
+                        <div class="w-2 h-2 rounded-full bg-gray-500"></div>
+                        <span>Planificando estrategia digital</span>
+                    </div>
+                    <div id="step4" class="flex items-center gap-2 justify-center opacity-40">
+                        <div class="w-2 h-2 rounded-full bg-gray-500"></div>
+                        <span>Generando preview de logo</span>
                     </div>
                 </div>
-                <div id="resultsContent" class="bg-black/30 rounded-xl p-6 overflow-auto max-h-[600px]">
-                    <pre class="text-gray-300 text-sm whitespace-pre-wrap"></pre>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden section-fade">
+            
+            <!-- Tabs Navigation -->
+            <div class="flex flex-wrap gap-2 mb-8 justify-center">
+                <button onclick="showTab('strategy')" class="tab-btn px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition tab-active" data-tab="strategy">
+                    Estrategia
+                </button>
+                <button onclick="showTab('visual')" class="tab-btn px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition" data-tab="visual">
+                    Identidad Visual
+                </button>
+                <button onclick="showTab('digital')" class="tab-btn px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition" data-tab="digital">
+                    Plan Digital
+                </button>
+                <button onclick="showTab('preview')" class="tab-btn px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition" data-tab="preview">
+                    Preview Logo
+                </button>
+            </div>
+
+            <!-- Tab: Strategy -->
+            <div id="tab-strategy" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Posicionamiento -->
+                    <div class="card-glass rounded-2xl p-6">
+                        <h3 class="text-lg font-semibold text-indigo-400 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Posicionamiento
+                        </h3>
+                        <p id="positioning-statement" class="text-gray-300 text-lg leading-relaxed"></p>
+                    </div>
+
+                    <!-- Propuesta de Valor -->
+                    <div class="card-glass rounded-2xl p-6">
+                        <h3 class="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Propuesta de Valor
+                        </h3>
+                        <ul id="value-props" class="space-y-2"></ul>
+                    </div>
+
+                    <!-- Voz de Marca -->
+                    <div class="card-glass rounded-2xl p-6">
+                        <h3 class="text-lg font-semibold text-pink-400 mb-4">Voz de Marca</h3>
+                        <p id="brand-tone" class="text-gray-300 mb-4"></p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-green-400 text-sm font-medium mb-2">Si hacer</h4>
+                                <ul id="brand-dos" class="text-sm text-gray-400 space-y-1"></ul>
+                            </div>
+                            <div>
+                                <h4 class="text-red-400 text-sm font-medium mb-2">No hacer</h4>
+                                <ul id="brand-donts" class="text-sm text-gray-400 space-y-1"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="card-glass rounded-2xl p-6">
+                        <h3 class="text-lg font-semibold text-cyan-400 mb-4">Keywords de Marca</h3>
+                        <div id="keywords" class="flex flex-wrap gap-2"></div>
+                    </div>
                 </div>
-                <button onclick="resetForm()" class="mt-6 w-full py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition">
+
+                <!-- Buyer Personas -->
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold mb-4">Buyer Personas</h3>
+                    <div id="personas" class="grid md:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- Tab: Visual Identity -->
+            <div id="tab-visual" class="tab-content hidden">
+                <!-- Paleta de Colores -->
+                <div class="card-glass rounded-2xl p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-6">Paleta de Colores</h3>
+                    <div id="color-palette" class="flex flex-wrap gap-6 justify-center"></div>
+                </div>
+
+                <!-- Tipografia -->
+                <div class="card-glass rounded-2xl p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-6">Tipografia</h3>
+                    <div id="typography" class="grid md:grid-cols-2 gap-6"></div>
+                </div>
+
+                <!-- Estilo Visual -->
+                <div class="card-glass rounded-2xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">Estilo Visual</h3>
+                    <p id="visual-aesthetic" class="text-gray-300 text-lg mb-4"></p>
+                    <div id="visual-elements" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
+            <!-- Tab: Digital Strategy -->
+            <div id="tab-digital" class="tab-content hidden">
+                <!-- Plataformas -->
+                <div class="card-glass rounded-2xl p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Plataformas Recomendadas</h3>
+                    <div id="platforms" class="grid md:grid-cols-3 gap-4"></div>
+                </div>
+
+                <!-- Pilares de Contenido -->
+                <div class="card-glass rounded-2xl p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Pilares de Contenido</h3>
+                    <div id="content-pillars" class="space-y-3"></div>
+                </div>
+
+                <!-- Calendario -->
+                <div class="card-glass rounded-2xl p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Calendario de Contenido (Primera Semana)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-white/10">
+                                    <th class="text-left py-3 px-2 text-gray-400">Dia</th>
+                                    <th class="text-left py-3 px-2 text-gray-400">Pilar</th>
+                                    <th class="text-left py-3 px-2 text-gray-400">Formato</th>
+                                    <th class="text-left py-3 px-2 text-gray-400">Copy</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendar-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Hashtags -->
+                <div class="card-glass rounded-2xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">Estrategia de Hashtags</h3>
+                    <div id="hashtags" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- Tab: Logo Preview -->
+            <div id="tab-preview" class="tab-content hidden">
+                <div class="card-glass rounded-2xl p-8 text-center">
+                    <h3 class="text-xl font-semibold mb-4">Preview de Logo</h3>
+                    <p class="text-gray-400 mb-6">Conceptos generados con IA basados en tu estrategia de marca</p>
+                    <div id="logo-previews" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Logos se insertan aqui -->
+                    </div>
+                    <button onclick="generateMoreLogos()" class="mt-6 px-6 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition">
+                        Generar mas variantes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-center gap-4 mt-8">
+                <button onclick="downloadPDF()" class="px-6 py-3 btn-primary rounded-xl transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Descargar PDF
+                </button>
+                <button onclick="startOver()" class="px-6 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition">
                     Crear otra marca
                 </button>
             </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-8 px-4 text-center text-gray-500 text-sm">
-        <p>Brand Factory - Creado con n8n + Claude AI</p>
-    </footer>
+        </section>
+    </main>
 
     <script>
         const WEBHOOK_URL = 'https://n8n-production-cf6d.up.railway.app/webhook/brand-factory';
-        let lastResults = null;
+        let brandData = null;
 
+        // Form submission
         document.getElementById('brandForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
             
             // Show loading
-            document.getElementById('loadingModal').classList.remove('hidden');
-            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
             
             try {
+                // Update loading steps
+                updateLoadingStep(1);
+                
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 
-                lastResults = await response.json();
+                const result = await response.json();
+                brandData = parseResult(result);
+                
+                // Render results
+                renderStrategy(brandData.strategy);
+                renderVisual(brandData.visual);
+                renderDigital(brandData.digital);
                 
                 // Show results
-                document.getElementById('resultsContent').querySelector('pre').textContent = 
-                    JSON.stringify(lastResults, null, 2);
+                document.getElementById('loadingSection').classList.add('hidden');
                 document.getElementById('resultsSection').classList.remove('hidden');
-                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
                 
             } catch (error) {
-                alert('Error al generar la estrategia. Por favor intenta de nuevo.\n\n' + error.message);
                 console.error(error);
-            } finally {
-                document.getElementById('loadingModal').classList.add('hidden');
-                document.getElementById('submitBtn').disabled = false;
+                alert('Error al generar la marca. Por favor intenta de nuevo.');
+                document.getElementById('loadingSection').classList.add('hidden');
+                document.getElementById('formSection').classList.remove('hidden');
             }
         });
 
-        function copyResults() {
-            if (!lastResults) return;
-            navigator.clipboard.writeText(JSON.stringify(lastResults, null, 2));
-            alert('JSON copiado al portapapeles');
+        function parseResult(result) {
+            // Parse the Claude response - handle both string and object
+            let content = result;
+            if (typeof result === 'object' && result.content) {
+                content = result.content;
+            }
+            if (typeof content === 'string') {
+                // Extract JSON from markdown code blocks if present
+                const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    try {
+                        content = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+                    } catch (e) {
+                        console.error('Parse error:', e);
+                    }
+                }
+            }
+            return {
+                strategy: content,
+                visual: content.visual_identity || content.identidad_visual || {},
+                digital: content.digital_strategy || content.estrategia_digital || {}
+            };
         }
 
-        function downloadResults() {
-            if (!lastResults) return;
-            const blob = new Blob([JSON.stringify(lastResults, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `brand-strategy-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+        function renderStrategy(data) {
+            // Posicionamiento
+            const pos = data.posicionamiento || {};
+            document.getElementById('positioning-statement').textContent = 
+                pos.statement || pos.declaracion || 'Tu marca se posiciona como lider en su categoria.';
+            
+            // Propuesta de valor
+            const valueProps = document.getElementById('value-props');
+            const props = pos.propuesta_valor || data.propuesta_valor || [];
+            const propsList = Array.isArray(props) ? props : [props];
+            valueProps.innerHTML = propsList.map(p => 
+                `<li class="flex items-start gap-2"><span class="text-purple-400 mt-1">+</span><span class="text-gray-300">${p}</span></li>`
+            ).join('');
+            
+            // Voz de marca
+            const voz = data.voz_de_marca || {};
+            document.getElementById('brand-tone').textContent = voz.tono || 'Profesional y cercano';
+            
+            const dos = voz.dos || voz.hacer || [];
+            const donts = voz.donts || voz.no_hacer || [];
+            document.getElementById('brand-dos').innerHTML = dos.slice(0,4).map(d => `<li>+ ${d}</li>`).join('');
+            document.getElementById('brand-donts').innerHTML = donts.slice(0,4).map(d => `<li>- ${d}</li>`).join('');
+            
+            // Keywords
+            const keywords = data.keywords || [];
+            document.getElementById('keywords').innerHTML = keywords.map(k => 
+                `<span class="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">${k}</span>`
+            ).join('');
+            
+            // Personas
+            const personas = data.buyer_personas || [];
+            document.getElementById('personas').innerHTML = personas.map(p => `
+                <div class="card-glass rounded-xl p-4">
+                    <h4 class="font-semibold text-indigo-300 mb-2">${p.nombre || 'Persona'}</h4>
+                    <p class="text-sm text-gray-400 mb-2">${p.edad || ''} - ${p.ocupacion || ''}</p>
+                    <div class="text-xs text-gray-500">
+                        <p class="mb-1"><span class="text-red-400">Dolores:</span> ${(p.dolores || []).join(', ')}</p>
+                        <p><span class="text-green-400">Motivaciones:</span> ${(p.motivaciones || []).join(', ')}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function resetForm() {
-            document.getElementById('brandForm').reset();
+        function renderVisual(data) {
+            // Paleta de colores
+            const palette = data.paleta_colores || {};
+            const colors = [
+                { name: 'Primario', ...palette.primario },
+                { name: 'Secundario', ...palette.secundario },
+                { name: 'Acento', ...palette.acento }
+            ].filter(c => c.hex);
+            
+            document.getElementById('color-palette').innerHTML = colors.map(c => `
+                <div class="text-center">
+                    <div class="color-swatch mx-auto mb-3" style="background-color: ${c.hex}"></div>
+                    <p class="font-medium">${c.name}</p>
+                    <p class="text-sm text-gray-400">${c.hex}</p>
+                    <p class="text-xs text-gray-500 mt-1">${c.significado || c.nombre || ''}</p>
+                </div>
+            `).join('') || '<p class="text-gray-400">Paleta pendiente de generacion</p>';
+            
+            // Tipografia
+            const typo = data.tipografia || {};
+            document.getElementById('typography').innerHTML = `
+                <div class="text-center">
+                    <p class="text-3xl mb-2" style="font-family: '${typo.primaria?.font || 'Inter'}', sans-serif">${typo.primaria?.font || 'Font Primaria'}</p>
+                    <p class="text-sm text-gray-400">Titulos - ${typo.primaria?.uso || 'Headers'}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl mb-2" style="font-family: '${typo.secundaria?.font || 'Inter'}', sans-serif">${typo.secundaria?.font || 'Font Secundaria'}</p>
+                    <p class="text-sm text-gray-400">Cuerpo - ${typo.secundaria?.uso || 'Body text'}</p>
+                </div>
+            `;
+            
+            // Estilo
+            const estilo = data.estilo_visual || {};
+            document.getElementById('visual-aesthetic').textContent = estilo.aesthetic || 'Moderno y minimalista';
+            const elements = estilo.elementos_graficos || [];
+            document.getElementById('visual-elements').innerHTML = elements.map(e => 
+                `<span class="px-3 py-1 bg-white/10 rounded-full text-sm">${e}</span>`
+            ).join('');
+        }
+
+        function renderDigital(data) {
+            // Plataformas
+            const platforms = data.plataformas || [];
+            document.getElementById('platforms').innerHTML = platforms.slice(0,3).map(p => `
+                <div class="card-glass rounded-xl p-4 text-center">
+                    <p class="text-2xl mb-2">${getPlatformEmoji(p.nombre)}</p>
+                    <p class="font-semibold">${p.nombre}</p>
+                    <p class="text-sm text-gray-400">${p.frecuencia || ''}</p>
+                </div>
+            `).join('');
+            
+            // Pilares
+            const pillars = data.pilares_contenido || [];
+            document.getElementById('content-pillars').innerHTML = pillars.map(p => `
+                <div class="flex items-center gap-4 p-3 bg-white/5 rounded-xl">
+                    <div class="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-bold">
+                        ${p.porcentaje || 25}%
+                    </div>
+                    <div>
+                        <p class="font-medium">${p.nombre}</p>
+                        <p class="text-sm text-gray-400">${p.descripcion || ''}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Calendario
+            const calendar = data.calendario_30_dias || [];
+            document.getElementById('calendar-body').innerHTML = calendar.slice(0,7).map(c => `
+                <tr class="border-b border-white/5">
+                    <td class="py-3 px-2 text-indigo-300">Dia ${c.dia}</td>
+                    <td class="py-3 px-2">${c.pilar}</td>
+                    <td class="py-3 px-2 text-gray-400">${c.formato}</td>
+                    <td class="py-3 px-2 text-gray-300 text-xs">${c.copy || ''}</td>
+                </tr>
+            `).join('');
+            
+            // Hashtags
+            const hashtags = data.hashtags || {};
+            document.getElementById('hashtags').innerHTML = `
+                <div>
+                    <p class="text-sm text-indigo-400 mb-2">Branded</p>
+                    <div class="flex flex-wrap gap-2">${(hashtags.branded || []).map(h => `<span class="text-sm text-gray-300">${h}</span>`).join(' ')}</div>
+                </div>
+                <div>
+                    <p class="text-sm text-purple-400 mb-2">Comunidad</p>
+                    <div class="flex flex-wrap gap-2">${(hashtags.comunidad || []).map(h => `<span class="text-sm text-gray-300">${h}</span>`).join(' ')}</div>
+                </div>
+            `;
+        }
+
+        function getPlatformEmoji(name) {
+            const emojis = {
+                'instagram': '📸', 'tiktok': '🎵', 'linkedin': '💼', 
+                'twitter': '🐦', 'facebook': '👥', 'youtube': '🎬'
+            };
+            return emojis[name?.toLowerCase()] || '📱';
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('tab-active');
+        }
+
+        function updateLoadingStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`step${i}`);
+                if (i < step) {
+                    el.classList.remove('opacity-40');
+                    el.querySelector('div').classList.remove('animate-pulse', 'bg-gray-500');
+                    el.querySelector('div').classList.add('bg-green-500');
+                } else if (i === step) {
+                    el.classList.remove('opacity-40');
+                    el.querySelector('div').classList.add('animate-pulse');
+                }
+            }
+        }
+
+        function startOver() {
             document.getElementById('resultsSection').classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('formSection').classList.remove('hidden');
+            document.getElementById('brandForm').reset();
+        }
+
+        function downloadPDF() {
+            alert('Funcion de PDF en desarrollo. Por ahora puedes usar Ctrl+P para imprimir a PDF.');
+        }
+
+        function generateMoreLogos() {
+            alert('Generacion de logos adicionales en desarrollo.');
         }
     </script>
 </body>
